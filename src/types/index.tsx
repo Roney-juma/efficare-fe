@@ -25,3 +25,17 @@ export interface DashboardStats {
   pendingActions: number;
   totalClients: number;
 }
+export interface LoginFormData {
+  email: string;
+  password: string;
+  rememberMe: boolean;
+}
+export interface RegisterFormData {
+  name: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
+export interface ForgotPasswordFormData {
+  email: string;
+}
