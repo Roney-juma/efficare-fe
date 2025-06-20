@@ -30,8 +30,9 @@ export interface LoginFormData {
   password: string;
   rememberMe: boolean;
 }
-export interface RegisterFormData {
-  name: string;
+export interface SignupFormData {
+  firstName: string;
+  lastName: string;
   email: string;
   password: string;
   confirmPassword: string;
