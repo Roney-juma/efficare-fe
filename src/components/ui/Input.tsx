@@ -10,6 +10,7 @@ export const Input: React.FC<InputProps> = ({
   label,
   error,
   className,
+  disabled,
   ...props
 }) => {
   return (
@@ -21,10 +22,12 @@ export const Input: React.FC<InputProps> = ({
       )}
       <input
         className={cn(
-          'w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500',
+          'w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition-colors',
           error && 'border-red-500',
+          disabled && 'bg-gray-100 cursor-not-allowed opacity-60',
           className
         )}
+        disabled={disabled}
         {...props}
       />
       {error && (

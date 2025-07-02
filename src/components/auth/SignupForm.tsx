@@ -2,6 +2,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { SignupFormData } from '@/types';
@@ -12,6 +13,7 @@ interface SignupFormProps {
 }
 
 export const SignupForm: React.FC<SignupFormProps> = ({ role }) => {
+  const router = useRouter();
   const [formData, setFormData] = useState<SignupFormData>({
     firstName: '',
     lastName: '',
@@ -24,6 +26,7 @@ export const SignupForm: React.FC<SignupFormProps> = ({ role }) => {
   
   const [errors, setErrors] = useState<Partial<SignupFormData>>({});
   const [isLoading, setIsLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -67,11 +70,20 @@ export const SignupForm: React.FC<SignupFormProps> = ({ role }) => {
     setIsLoading(true);
     try {
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 1500));
       console.log('Signup data:', formData);
-      // Handle successful signup
+      
+      // Show success message
+      setSuccessMessage('Account created successfully! Redirecting to login...');
+      
+      // Navigate to login page after 2 seconds
+      setTimeout(() => {
+        router.push('/auth/login');
+      }, 2000);
+      
     } catch (error) {
       console.error('Signup error:', error);
+      setErrors({ email: 'Failed to create account. Please try again.' });
     } finally {
       setIsLoading(false);
     }
@@ -79,6 +91,21 @@ export const SignupForm: React.FC<SignupFormProps> = ({ role }) => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      {successMessage && (
+        <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+          <div className="flex items-center">
+            <div className="flex-shrink-0">
+              <svg className="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <div className="ml-3">
+              <p className="text-sm font-medium text-green-800">{successMessage}</p>
+            </div>
+          </div>
+        </div>
+      )}
+      
       <div className="grid grid-cols-2 gap-4">
         <Input
           name="firstName"
@@ -87,6 +114,7 @@ export const SignupForm: React.FC<SignupFormProps> = ({ role }) => {
           value={formData.firstName}
           onChange={handleChange}
           error={errors.firstName}
+          disabled={isLoading || !!successMessage}
         />
         <Input
           name="lastName"
@@ -95,6 +123,7 @@ export const SignupForm: React.FC<SignupFormProps> = ({ role }) => {
           value={formData.lastName}
           onChange={handleChange}
           error={errors.lastName}
+          disabled={isLoading || !!successMessage}
         />
       </div>
       
@@ -105,6 +134,7 @@ export const SignupForm: React.FC<SignupFormProps> = ({ role }) => {
         value={formData.email}
         onChange={handleChange}
         error={errors.email}
+        disabled={isLoading || !!successMessage}
       />
       
       <Input
@@ -114,6 +144,7 @@ export const SignupForm: React.FC<SignupFormProps> = ({ role }) => {
         value={formData.password}
         onChange={handleChange}
         error={errors.password}
+        disabled={isLoading || !!successMessage}
       />
       
       <Input
@@ -123,13 +154,15 @@ export const SignupForm: React.FC<SignupFormProps> = ({ role }) => {
         value={formData.confirmPassword}
         onChange={handleChange}
         error={errors.confirmPassword}
+        disabled={isLoading || !!successMessage}
       />
       
       <select
         name="country"
         value={formData.country}
         onChange={handleChange}
-        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+        disabled={isLoading || !!successMessage}
+        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
       >
         <option value="">Select Country</option>
         <option value="US">United States</option>
@@ -145,9 +178,9 @@ export const SignupForm: React.FC<SignupFormProps> = ({ role }) => {
         type="submit" 
         className="w-full" 
         size="lg"
-        disabled={isLoading}
+        disabled={isLoading || !!successMessage}
       >
-        {isLoading ? 'Creating Account...' : 'Create Account'}
+        {isLoading ? 'Creating Account...' : successMessage ? 'Redirecting...' : 'Create Account'}
       </Button>
     </form>
   );

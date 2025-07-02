@@ -6,7 +6,12 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "lint:fix": "next lint --fix",
+    "type-check": "tsc --noEmit",
+    "clean": "rm -rf .next out dist",
+    "setup": "npm install && npm run build",
+    "preview": "npm run build && npm run start"
   },
   "dependencies": {
     "clsx": "^2.1.1",

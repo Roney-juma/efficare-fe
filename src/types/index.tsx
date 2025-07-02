@@ -36,6 +36,8 @@ export interface SignupFormData {
   email: string;
   password: string;
   confirmPassword: string;
+  country: string;
+  role: 'client' | 'counselor';
 }
 export interface ForgotPasswordFormData {
   email: string;

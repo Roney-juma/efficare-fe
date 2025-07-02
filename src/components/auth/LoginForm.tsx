@@ -1,7 +1,7 @@
-// ===== 12. src/components/auth/LoginForm.tsx =====
 'use client';
 import Link from 'next/link';
-import { Card } from '@/components/ui/Card';
+import { useRouter } from 'next/navigation';
+import { Card } from '@/components/ui/Card';    
 
 import React, { useState } from 'react';
 import { Input } from '@/components/ui/Input';
@@ -10,6 +10,7 @@ import { LoginFormData } from '@/types';
 import { validateEmail } from '@/lib/utils';
 
 export const LoginForm: React.FC = () => {
+  const router = useRouter();
   const [formData, setFormData] = useState<LoginFormData>({
     email: '',
     password: '',
@@ -18,6 +19,7 @@ export const LoginForm: React.FC = () => {
   
   const [errors, setErrors] = useState<Partial<LoginFormData>>({});
   const [isLoading, setIsLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -56,11 +58,20 @@ export const LoginForm: React.FC = () => {
     setIsLoading(true);
     try {
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 1500));
       console.log('Login data:', formData);
-      // Handle successful login
+      
+      // Show success message
+      setSuccessMessage('Login successful! Redirecting to dashboard...');
+      
+      // Navigate to dashboard after 1.5 seconds
+      setTimeout(() => {
+        router.push('/dashboard?from=login');
+      }, 1500);
+      
     } catch (error) {
       console.error('Login error:', error);
+      setErrors({ email: 'Invalid credentials. Please try again.' });
     } finally {
       setIsLoading(false);
     }
@@ -68,6 +79,21 @@ export const LoginForm: React.FC = () => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      {successMessage && (
+        <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+          <div className="flex items-center">
+            <div className="flex-shrink-0">
+              <svg className="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <div className="ml-3">
+              <p className="text-sm font-medium text-green-800">{successMessage}</p>
+            </div>
+          </div>
+        </div>
+      )}
+      
       <Input
         name="email"
         type="email"
@@ -75,6 +101,7 @@ export const LoginForm: React.FC = () => {
         value={formData.email}
         onChange={handleChange}
         error={errors.email}
+        disabled={isLoading || !!successMessage}
       />
       
       <Input
@@ -84,6 +111,7 @@ export const LoginForm: React.FC = () => {
         value={formData.password}
         onChange={handleChange}
         error={errors.password}
+        disabled={isLoading || !!successMessage}
       />
       
       <div className="flex items-center justify-between">
@@ -93,7 +121,8 @@ export const LoginForm: React.FC = () => {
             name="rememberMe"
             checked={formData.rememberMe}
             onChange={handleChange}
-            className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+            disabled={isLoading || !!successMessage}
+            className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 disabled:opacity-50"
           />
           <span className="ml-2 text-sm text-gray-600">Remember me</span>
         </label>
@@ -110,17 +139,17 @@ export const LoginForm: React.FC = () => {
         type="submit" 
         className="w-full" 
         size="lg"
-        disabled={isLoading}
+        disabled={isLoading || !!successMessage}
       >
-        {isLoading ? 'Signing In...' : 'Log In'}
+        {isLoading ? 'Signing In...' : successMessage ? 'Redirecting...' : 'Log In'}
       </Button>
       
       <div className="text-center">
         <p className="text-gray-600">
           Looking for a counselor?{' '}
-          <span className="text-blue-600 cursor-pointer hover:text-blue-700">
+          <Link href="/auth/signup?role=client" className="text-blue-600 hover:text-blue-700">
             Click here to start
-          </span>
+          </Link>
         </p>
       </div>
     </form>
