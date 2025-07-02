@@ -78,7 +78,7 @@ export const SignupForm: React.FC<SignupFormProps> = ({ role }) => {
       
       // Navigate to login page after 2 seconds
       setTimeout(() => {
-        router.push('/auth/login');
+        router.push('/auth/login?from=signup');
       }, 2000);
       
     } catch (error) {
